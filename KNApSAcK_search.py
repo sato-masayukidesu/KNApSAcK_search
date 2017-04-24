@@ -6,23 +6,23 @@
 import urllib.request
 
 
-# In[16]:
+# In[2]:
 
 x = input()
 url = "http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=all&word=%s" % (x)
 
 
-# In[17]:
+# In[3]:
 
 print(url)
 
 
-# In[18]:
+# In[4]:
 
 urllib.request.urlretrieve(url, '%s.txt' % (x))
 
 
-# In[23]:
+# In[5]:
 
 ld = open("%s.txt" % (x))
 lines = ld.readlines()
