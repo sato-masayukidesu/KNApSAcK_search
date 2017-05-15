@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[4]:
 
 import urllib.request
 
 
-# In[2]:
+# In[19]:
 
 x = input()
 url = "http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=all&word=%s" % (x)
@@ -22,7 +22,7 @@ print(url)
 urllib.request.urlretrieve(url, '%s.txt' % (x))
 
 
-# In[7]:
+# In[20]:
 
 ld = open("%s.txt" % (x))
 lines = ld.readlines()
@@ -37,20 +37,40 @@ for line in lines:
         urllib.request.urlretrieve("http://knapsack3d.sakura.ne.jp/mol3d/%s.3d.mol" % (line[49:-34]), '%s.mol' % (line[49:-34]))
 
 
-# In[8]:
+# In[6]:
 
 print(C_number)
 
 
-# In[12]:
+# In[23]:
 
 from rdkit import Chem
-mol_data = open('C00000730.mol','r').read()
-mol = Chem.MolFromMolBlock(mol_data)
-print(Chem.MolToSmiles(mol))
+for i in C_number:
+    mol_data = open('%s.mol' % (i),'r').read()
+    mol = Chem.MolFromMolBlock(mol_data)
+    print(Chem.MolToSmiles(mol))
+
+
+# In[22]:
+
+from rdkit.Chem import Draw
+from rdkit.Chem import rdDepictor
+for i in C_number:
+    mol_data = open('%s.mol' % (i),'r').read()
+    mol = Chem.MolFromMolBlock(mol_data)
+    rdDepictor.Compute2DCoords(mol)
+    Draw.MolToFile(mol, '%s.png' % (i))
 
 
 # In[ ]:
 
-C=C(OC1C=C(C(=O)O)C=CC1N)C(=O)O
+k = open(copy1.mol, "r").read()
+mol = Chem.MolFromMolBlock(k)
+rdDepictor.Compute2DCoords(mol)
+Draw.MolToFile(mol, '.png' % (i))
+
+
+# In[ ]:
+
+
 
