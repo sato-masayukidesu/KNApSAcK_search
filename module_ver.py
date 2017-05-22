@@ -34,6 +34,7 @@ def get_molfile(gen):
             C_number.append(line[49:-34])
             urllib.request.urlretrieve("http://knapsack3d.sakura.ne.jp/mol3d/%s.3d.mol" % (line[49:-34]), '%s.mol' % (line[49:-34]))
     C_numbers = C_number
+    os.chdir(CurrentDir)
 
     return C_number
 
@@ -50,6 +51,7 @@ def make_sdffile():
     for mol in mols:
         AllChem.Compute2DCoords(mol)
         outf.write(mol)
+    os.chdir(CurrentDir)
     return None
 
 
@@ -65,4 +67,5 @@ def search_MCS(sdf, write=0):
         if write:
             print(match_atoms)
         Draw.MolToFile(m, 'comp_%d.png' % i, highlightAtoms=match_atoms)
+    os.chdir(CurrentDir)
     return None
