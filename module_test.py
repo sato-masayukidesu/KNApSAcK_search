@@ -1,29 +1,44 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 import module_ver
 
 
-# In[6]:
+# In[ ]:
 
 module_ver.get_molfile("Klebsiella")
 
 
-# In[3]:
+# In[ ]:
 
 module_ver.make_sdffile()
 
 
-# In[4]:
+# In[ ]:
 
 module_ver.search_MCS("output.sdf")
 
 
-# In[8]:
+# In[ ]:
+
+get_ipython().magic('pwd')
 
 
+# In[ ]:
+
+print(module_ver.C_numbers)
+
+
+# In[ ]:
+
+print(genus)
+
+
+# In[ ]:
+
+print(module_ver.genus)
 
 
 # In[ ]:

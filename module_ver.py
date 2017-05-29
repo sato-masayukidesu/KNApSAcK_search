@@ -8,11 +8,12 @@ from rdkit.Chem import BRICS
 from rdkit.Chem import rdMolDescriptors
 from rdkit.Chem import rdFMCS
 
-genus = ""
+
 CurrentDir = os.getcwd()
 
 
 def get_molfile(gen):
+    global genus
     global C_numbers
     C_number = []
     genus = gen
@@ -40,6 +41,7 @@ def get_molfile(gen):
 
 
 def make_sdffile():
+    global genus
     if os.getcwd() == CurrentDir:
         os.chdir(genus)
     mols = []
@@ -55,7 +57,8 @@ def make_sdffile():
     return None
 
 
-def search_MCS(sdf, write=0):
+def search_MCS(sdf, write=False):
+    global genus
     if os.getcwd() == CurrentDir:
         os.chdir(genus)
     ms = [m for m in Chem.SDMolSupplier(sdf) if m is not None]
