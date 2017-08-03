@@ -1,6 +1,6 @@
 
 
-def search(Cnumberlist):
+def search(Cnumberlist, filename="test.kcfs"):
     "make kcffile only given Cnumbers from all kcffile"
     for Cnumber in Cnumberlist:
         Cn = int(Cnumber[1:])
@@ -17,17 +17,18 @@ def search(Cnumberlist):
         elif Cn <= 50409:
             page = "50-59"
         else:
-            print("your Cnumber is too large")
+            print("your Cnumber " + Cnumber + " is too large")
+            continue
 
-        with open("kcfs/KNApSAck" + page + ".kcfs") as f:
+        with open("../../../作業場/kcfs/KNApSAck" + page + ".kcfs") as f:
             for (i, line) in enumerate(f):
-                # print(line[12:21]) C00000000
+                # print(line[12:21]) # C00000000
                 if line[12:21] == Cnumber:
-                    temp = i
-                    print("find", temp)
+                    # temp = i
+                    # print("find", temp)
                     lin = line
                     flag = 0
-                    with open("test.kcfs", "a") as fw:
+                    with open(filename, "a") as fw:
                         while(lin[:5] != "ENTRY" or flag != 1):
                             flag = 1
                             fw.write(lin)
@@ -36,10 +37,10 @@ def search(Cnumberlist):
                             break
 
 
-def main():
-    Clist = input()
+def main(Clist):
+    # Clist = input()
     search(Clist)
 
 
 if __name__ == "__main__":
-    main()
+    main(['C00000730', 'C00000733', 'C00000734'])

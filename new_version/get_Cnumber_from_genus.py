@@ -1,83 +1,83 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 import requests
 
 
-# In[2]:
+# In[ ]:
 
 genus = input()
 html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=all&word=" + genus)
 
 
-# In[42]:
+# In[ ]:
 
 html.text
 
 
-# In[15]:
+# In[ ]:
 
 import lxml.html
 
 
-# In[39]:
+# In[ ]:
 
 dom = lxml.html.fromstring(html.text)
 
 
-# In[40]:
+# In[ ]:
 
 print(dom)
 
 
-# In[18]:
+# In[ ]:
 
 Cnumber = dom.xpath('//*[@id="tablekit-table-1"]/tbody/tr[2]/td[1]/a')[0].text
 
 
-# In[107]:
+# In[ ]:
 
 print(dom.xpath('//*[@id="1143123"]/a[4]'))
 
 
-# In[12]:
+# In[ ]:
 
 print(Cnumber)
 
 
-# In[64]:
+# In[ ]:
 
 lxml.html.open_in_browser(dom)
 
 
-# In[21]:
+# In[ ]:
 
 print("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=all&word=" + genus)
 
 
-# In[23]:
+# In[ ]:
 
 print(html.text)
 
 
-# In[111]:
+# In[ ]:
 
 Cnumber = dom.xpath('//*[@class="sortable d1"]/tr[4]/td[1]/a')
 
 
-# In[112]:
+# In[ ]:
 
 print(Cnumber)
 
 
-# In[81]:
+# In[ ]:
 
 IndexError
 
 
-# In[115]:
+# In[ ]:
 
 i = 1
 Cnumber = []
@@ -93,7 +93,7 @@ while(True):
         break
 
 
-# In[116]:
+# In[ ]:
 
 print(Cnumber)
 
@@ -105,12 +105,60 @@ print(Cnumber)
 
 # In[ ]:
 
-
+html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=all&word=C00000995")
 
 
 # In[ ]:
 
+dom = lxml.html.fromstring(html.text)
 
+
+# In[ ]:
+
+print(html.text)
+
+
+# In[ ]:
+
+genus = dom.xpath('//*[@class="sortable d1"]/tr[1]/td[6]')[0].text
+
+
+# In[ ]:
+
+print(genus)
+
+
+# In[ ]:
+
+genus.split()[0].lower()
+
+
+# In[ ]:
+
+html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=citrus")
+
+
+# In[ ]:
+
+dom = lxml.html.fromstring(html.text)
+
+
+# In[ ]:
+
+i = 1
+Cnumber = []
+while(True):
+    try:
+        if "Citrus" != dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]/font')[0].text.split()[0]:
+            print(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[1]/a')[0].text)
+    except IndexError:
+        print("shu-ryo-")
+        print(i)
+        break
+    i += 1
+    if i > 1000:
+        print("nagasugi")
+        break
 
 
 # In[ ]:
