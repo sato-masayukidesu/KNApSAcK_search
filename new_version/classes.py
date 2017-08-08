@@ -267,12 +267,12 @@ class MCS_Finder(object):
         import time
         import urllib.request
 
-        if not os.path.exists("KNApSaAck_mol"):
-            os.mkdir("KNApSaAck_mol")
+        if not os.path.exists("KNApSAck_mol"):
+            os.mkdir("KNApSAck_mol")
         for Cn in Cnlist:
-            if not os.path.exists('KNApSaAck_mol/%s.mol' % (Cn)):
+            if not os.path.exists('KNApSAck_mol/%s.mol' % (Cn)):
                 time.sleep(2)
-                urllib.request.urlretrieve("http://knapsack3d.sakura.ne.jp/mol3d/%s.3d.mol" % (Cn), 'KNApSaAck_mol/%s.mol' % (Cn))
+                urllib.request.urlretrieve("http://knapsack3d.sakura.ne.jp/mol3d/%s.3d.mol" % (Cn), 'KNApSAck_mol/%s.mol' % (Cn))
                 time.sleep(2)
         return True
 
