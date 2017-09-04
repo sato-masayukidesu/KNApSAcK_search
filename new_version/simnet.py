@@ -19,13 +19,23 @@ def temp1(mode=0):
             scorelist = []
             score = fi.readline().split("\t")
             score[1] = float(score[1][:-1])
-            if mode:
+            if mode == 1:
                 while(score[1] > 0.9):
                     scorelist.append(score)
                     if score[0] in Clist and score[1] < 1:
                         G = nxappend(G, Cnumber, score[0], score[1])
                     score = fi.readline().split("\t")
                     score[1] = float(score[1][:-1])
+            elif mode == 2:
+                try:
+                    while(True):
+                        scorelist.append(score)
+                        if score[0] in Clist and score[1] < 1:
+                            G = nxappend(G, Cnumber, score[0], score[1])
+                        score = fi.readline().split("\t")
+                        score[1] = float(score[1][:-1])
+                except IndexError:
+                    pass
             else:
                 for i in range(3):
                     scorelist.append(score)
@@ -34,9 +44,14 @@ def temp1(mode=0):
                     score = fi.readline().split("\t")
                     score[1] = float(score[1][:-1])
             scoredic[Cnumber] = scorelist
-    drawnx(G)
     print(str(len(G.nodes())) + "/" + str(len(Clist)))
-
+    print("edge:" + str(len(G.edges())))
+    # for g in nx.connected_component_subgraphs(G):
+    drawnx(G)
+    # nx.draw_networkx(G)
+    # plt.xticks([])
+    # plt.yticks([])
+    # plt.show()
 
 def nxappend(G, start, end, weight):
     if not start in G.nodes():
@@ -49,14 +64,14 @@ def nxappend(G, start, end, weight):
 
 
 def drawnx(G):
-    pos = nx.spring_layout(G, k=0.3)
+    pos = nx.spring_layout(G)
     edge_labels = dict()
     for param in G.edges(data=True):
         edge_labels[(param[0], param[1])] = param[2]["weight"]
     nx.draw_networkx_nodes(G, pos, node_size=200, node_color="w")
-    edge_width = [ d['weight']*2**2 for (u,v,d) in G.edges(data=True)]
-    # nx.draw_networkx_edges(G, pos, width=edge_width)
-    nx.draw_networkx_edges(G, pos)
+    edge_width = [ d['weight'] for (u,v,d) in G.edges(data=True)]
+    nx.draw_networkx_edges(G, pos, width=edge_width)
+    # nx.draw_networkx_edges(G, pos)
     # nx.draw_networkx_edge_labels(G, pos,edge_labels)
     nx.draw_networkx_labels(G, pos ,font_size=10, font_color="r")
     plt.xticks([])
@@ -65,7 +80,7 @@ def drawnx(G):
 
 
 def main():
-    temp1(mode=1)
+    temp1(mode=0)
 
 
 if __name__ == '__main__':
