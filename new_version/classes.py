@@ -220,7 +220,7 @@ class MCS_Finder(object):
         if self.mol_list is None:
             self.mol_list = []
             for Cn in Cnlist:
-                with open('KNApSaAck_mol/%s.mol' % (Cn))as f:
+                with open('KNApSAck_mol/%s.mol' % (Cn))as f:
                     mol = Chem.MolFromMolBlock(f.read())
                     rdDepictor.Compute2DCoords(mol)
                     self.mol_list.append(mol)
@@ -313,3 +313,18 @@ class MCS_Finder(object):
         self.find_MCS(Cnlist)
         self.find_MCS_grid_image(Cnlist)
         return True
+
+    def get_genuses(self, Cnumber, other=True):
+        import lxml.html
+        import requests
+        genuses_list = []
+        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber)
+        dom = lxml.html.fromstring(html.text)
+        for element in dom.xpath('//*[@class="org2"]'):
+            genus2 = element.text.split()[0]
+            if other:
+                genuses_list.append(element.text.replace("\xa0", " ")[:-1])
+            else:
+                if genus2 == self.genus:
+                    genuses_list.append(element.text.replace("\xa0", " ")[:-1])
+        return genuses_list
