@@ -1,6 +1,6 @@
 
 class MCS_Finder(object):
-    def __init__(self, gene):
+    def __init__(self, genus):
         import urllib.request
         import os
         import time
@@ -12,18 +12,18 @@ class MCS_Finder(object):
         import lxml.html
         import re
 
-        self.gene = gene
+        self.genus = genus
         self.mol_list = None
 
-        if not os.path.exists(self.gene):
-            os.mkdir(self.gene)
+        if not os.path.exists(self.genus):
+            os.mkdir(self.genus)
 
     def get_html(self, genus):
         """
         get htmlfile from KNApSAck search engine
 
         input
-            genus: str, generic name
+            genus: str, genusric name
 
         output
             html: requests.models.Response
@@ -78,7 +78,7 @@ class MCS_Finder(object):
     def search(self, Cnumberlist, filename=None):
         "make kcffile only given Cnumbers from all kcffile"
         if filename is None:
-            filename = self.gene + "/kcfs.kcfs"
+            filename = self.genus + "/kcfs.kcfs"
         with open(filename, "w"):
             pass
 
@@ -109,7 +109,7 @@ class MCS_Finder(object):
                         lin = line
                         flag = 0
                         with open(filename, "a") as fw:
-                            while(lin[:5] != "ENTRY" or flag != 1):
+                            while((lin[:5] != "ENTRY" and lin != "") or flag != 1):
                                 flag = 1
                                 fw.write(lin)
                                 lin = f.readline()
@@ -205,12 +205,12 @@ class MCS_Finder(object):
         return True
 
     def make_kcfs(self, limit=2000, splimit=0):
-        html = self.get_html(self.gene)
+        html = self.get_html(self.genus)
         print("get html")
         Cnumber = self.get_Cnumber(html, limit)
         self.search(Cnumber)
-        self.kcfs2count(self.gene + "/kcfs.kcfs", self.gene + "/kcfscount.txt")
-        self.split(self.gene + "/kcfscount.txt", self.gene + "/splitedcount.txt", splimit)
+        self.kcfs2count(self.genus + "/kcfs.kcfs", self.genus + "/kcfscount.txt")
+        self.split(self.genus + "/kcfscount.txt", self.genus + "/splitedcount.txt", splimit)
         return True
 
     def make_mol_list(self, Cnlist):
@@ -229,7 +229,7 @@ class MCS_Finder(object):
             return False
 
     def get_Cnlist_from_label(self, label):
-        with open(self.gene + "/kcfs.kcfs")as f:
+        with open(self.genus + "/kcfs.kcfs")as f:
             file = f.read()
             molecule = file.split("///\n")
             Cnlist = []
@@ -252,7 +252,7 @@ class MCS_Finder(object):
             query += l1 + l2
         query = re.sub("\(", "[(]", query)
         query = re.sub("\)", "[)]", query)
-        with open(self.gene + "/kcfs.kcfs")as f:
+        with open(self.genus + "/kcfs.kcfs")as f:
             file = f.read()
             molecule = file.split("///\n")
             Cnlist = []
@@ -285,7 +285,7 @@ class MCS_Finder(object):
         mcs = rdFMCS.FindMCS(self.mol_list)
         mcs_smarts = mcs.smartsString
         mcsMol = Chem.MolFromSmarts(mcs_smarts, mergeHs=True)
-        Draw.MolToFile(Chem.Mol(mcsMol.ToBinary()), self.gene + "/" + filename, kekulize=False)
+        Draw.MolToFile(Chem.Mol(mcsMol.ToBinary()), self.genus + "/" + filename, kekulize=False)
         return True
 
     def find_MCS_grid_image(self, Cnlist, filename="all_comp.png"):
@@ -303,11 +303,11 @@ class MCS_Finder(object):
             match_atoms = m.GetSubstructMatch(mcs_mol)
             match_list.append(match_atoms)
         img = Draw.MolsToGridImage(self.mol_list, highlightAtomLists=match_list, legends=Cnlist, subImgSize=(400, 400))
-        img.save(self.gene + "/" + filename)
+        img.save(self.genus + "/" + filename)
         return True
 
     def make_image(self, label):
-        self.mollist = None
+        self.mol_list = None
         Cnlist = self.get_Cnlist_from_label2(label)
         self.get_molfile(Cnlist)
         self.find_MCS(Cnlist)
