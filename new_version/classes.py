@@ -317,8 +317,10 @@ class MCS_Finder(object):
     def get_genuses(self, Cnumber, other=True):
         import lxml.html
         import requests
+        import time
         genuses_list = []
         html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber)
+        time.sleep(1)
         dom = lxml.html.fromstring(html.text)
         for element in dom.xpath('//*[@class="org2"]'):
             genus2 = element.text.split()[0]
