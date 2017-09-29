@@ -511,3 +511,70 @@ class MCS_Finder(object):
         url += urlC + "/" + urlC + "/cutoff=0.1"
         urllib.request.urlretrieve(url, filename)
         return True
+
+    def imscatter3(self, pos, Cnlist, ax=None, zoom=1):
+        import matplotlib.pyplot as plt
+        from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+        import numpy as np
+
+        if ax is None:
+            ax = plt.gca()
+        artists = []
+        for Cn in Cnlist:
+            filepath = self.genus + "/" + Cn + ".png"
+            image = plt.imread(filepath)
+            im = OffsetImage(image, zoom=zoom)
+            x, y = np.atleast_1d(pos[Cn][0], pos[Cn][1])
+            for x0, y0 in zip(x, y):
+                ab = AnnotationBbox(im, (x0, y0), xycoords='data', frameon=False)
+                artists.append(ax.add_artist(ab))
+            ax.update_datalim(np.column_stack([x, y]))
+            ax.autoscale()
+        return artists
+
+    def make_skeleton(self, Cnlist):
+        from rdkit import Chem
+        from rdkit.Chem import rdDepictor
+        from rdkit.Chem import Draw
+        from PIL import Image
+
+        for Cn in Cnlist:
+            with open('KNApSAck_mol/%s.mol' % Cn)as fi:
+                mol = Chem.MolFromMolBlock(fi.read())
+                rdDepictor.Compute2DCoords(mol)
+                filename = self.genus + "/" + Cn + ".png"
+                im = Draw.MolToImage(mol, size=(500, 500))
+                trans = Image.new('RGBA', im.size, (0, 0, 0, 0))
+                width = im.size[0]
+                height = im.size[1]
+                for x in range(width):
+                    for y in range(height):
+                        pixel = im.getpixel( (x, y) )
+
+                        # 白なら処理しない
+                        if pixel[0] == 255 and pixel[1] == 255 and pixel[2] == 255:
+                            continue
+
+                        # 白以外なら、用意した画像にピクセルを書き込み
+                        trans.putpixel( (x, y), pixel )
+                # 透過画像を保存
+                trans.save(filename)
+
+    def plot_with_figure(self, G, pos, Cnlist):
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
+        fig = plt.figure(figsize=(8, 6))
+        fig.patch.set_facecolor('w')
+        ax = plt.axes([0.1, 0.1, 0.8, 0.8])
+        ax.spines["right"].set_color("none")  # 右消し
+        ax.spines["left"].set_color("none")   # 左消し
+        ax.spines["top"].set_color("none")    # 上消し
+        ax.spines["bottom"].set_color("none") # 下消し
+        plt.xticks([])
+        plt.yticks([])
+        self.imscatter3(pos, Cnlist, zoom=0.5)
+        nx.draw_networkx_nodes(G, pos, with_labels=False, node_size=200, node_shape=",", node_color="w", alpha=0)
+        nx.draw_networkx_edges(G, pos, with_labels=False, alpha=0.3)
+        # plt.savefig("test.png")
+        plt.show()
