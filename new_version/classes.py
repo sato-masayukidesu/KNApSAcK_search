@@ -403,6 +403,74 @@ class MCS_Finder(object):
         # plt.yticks([])
         # plt.show()
 
+    def make_graph2(self, label, filepath, mode=0):
+        import networkx as nx
+        import matplotlib.pylab as plt
+        import pylab
+        import os
+
+        G = nx.Graph()
+        # scoredic = dict()
+        Clist = self.get_Cnlist_from_label2(label)
+        with open(filepath, "r") as fi:
+            score = fi.readline().split("\t")
+            score[2] = float(score[2][:-1])
+            for Cnumber in Clist:
+                # scorelist = []
+                if Cnumber != score[0]:
+                    while(True):
+                        if Cnumber == score[0]:
+                            break
+                        elif score[0] == "":
+                            break
+                        score = fi.readline().split("\t")
+                    score[2] = float(score[2][:-1])
+                if mode == 1:
+                    #特定のスコア値以上のエッジを作る
+                    while(score[2] > 0.9):
+                        # scorelist.append(score)
+                        if score[2] < 1:
+                            G = self.nxappend(G, Cnumber, score[1], score[2])
+                        score = fi.readline().split("\t")
+                        score[2] = float(score[2][:-1])
+                        if Cnumber != score[0]:
+                            break
+                elif mode == 2:
+                    # 全部のエッジを作る。
+                    try:
+                        while(True):
+                            # scorelist.append(score)
+                            if score[2] < 1:
+                                G = self.nxappend(G, Cnumber, score[1], score[2])
+                            score = fi.readline().split("\t")
+                            score[2] = float(score[2][:-1])
+                            if Cnumber != score[0]:
+                                break
+                    except IndexError:
+                        pass
+                else:
+                    # スコア値の高い順に二つ取ってくる
+                    for i in range(3):
+                        # scorelist.append(score)
+                        if score[2] < 1:
+                            G = self.nxappend(G, Cnumber, score[1], score[2])
+                        score = fi.readline().split("\t")
+                        score[2] = float(score[2][:-1])
+                        if Cnumber != score[0]:
+                            break
+                # scoredic[Cnumber] = scorelist
+        print(str(len(G.nodes())) + "/" + str(len(Clist)))
+        print("edge:" + str(len(G.edges())))
+        # nx.draw_networkx(G)
+        # plt.xticks([])
+        # plt.yticks([])
+        # plt.show()
+        return G
+
+    def make_and_draw_graph(self, label, filepath, mode=0, k=None):
+        G = self.make_graph2(label, filepath, mode=0)
+        self.drawnx(G, k)
+
     def nxappend(self, G, start, end, weight):
         if not start in G.nodes():
             G.add_node(start)
@@ -415,7 +483,9 @@ class MCS_Finder(object):
     def drawnx(self, G, k=None):
         import networkx as nx
         import matplotlib.pyplot as plt
+        import pylab
 
+        pylab.figure(figsize=(10, 10))
         pos = nx.spring_layout(G, 2, k)
         edge_labels = dict()
         for param in G.edges(data=True):
