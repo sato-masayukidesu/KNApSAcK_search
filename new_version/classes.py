@@ -333,7 +333,7 @@ class MCS_Finder(object):
                     genuses_list.append(element.text.replace("\xa0", " ")[:-1])
         return genuses_list
 
-    def make_graph(self, label, mode=0):
+    def make_graph(self, label, mode=0, k=None):
         import networkx as nx
         import matplotlib.pylab as plt
         import pylab
@@ -397,7 +397,7 @@ class MCS_Finder(object):
         print(str(len(G.nodes())) + "/" + str(len(Clist)))
         print("edge:" + str(len(G.edges())))
         # for g in nx.connected_component_subgraphs(G):
-        self.drawnx(G)
+        self.drawnx(G, k)
         # nx.draw_networkx(G)
         # plt.xticks([])
         # plt.yticks([])
@@ -412,11 +412,11 @@ class MCS_Finder(object):
             G.add_edge(start, end, weight=weight)
         return G
 
-    def drawnx(self, G):
+    def drawnx(self, G, k=None):
         import networkx as nx
         import matplotlib.pyplot as plt
 
-        pos = nx.spring_layout(G)
+        pos = nx.spring_layout(G, 2, k)
         edge_labels = dict()
         for param in G.edges(data=True):
             edge_labels[(param[0], param[1])] = param[2]["weight"]
