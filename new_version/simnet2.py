@@ -19,22 +19,19 @@ def get_simcomp(Clist, filename="SIMCOMP2/test.txt"):
     return True
 
 
-def temp1(mode=0):
+def make_graph(mode=0, Cnlist, filepath="SIMCOMP2/test.txt"):
     G = nx.Graph()
     pylab.figure(figsize=(10, 10))
     scoredic = dict()
-    f = MCS_Finder("Streptomyces")
-    Clist = f.get_Cnlist_from_label2("C(C)-C(C)-C(C-C-C-C-C-C)-C-C-C-C-C-C-C-C-C")
-    for Cnumber in Clist:
-        filepath = "SIMCOMP/" + Cnumber + ".txt"
-        if not os.path.exists(filepath):
-            continue
-        with open(filepath, "r") as fi:
+    if not os.path.exists(filepath):
+        print("input correct filepath")
+        return False
+    with open(filepath, "r") as fi:
+        for Cnumber in Clist:
             scorelist = []
             score = fi.readline().split("\t")
             score[1] = float(score[1][:-1])
             if mode == 1:
-                #特定のスコア値以上のエッジを作る
                 while(score[1] > 0.9):
                     scorelist.append(score)
                     if score[0] in Clist and score[1] < 1:
@@ -42,7 +39,6 @@ def temp1(mode=0):
                     score = fi.readline().split("\t")
                     score[1] = float(score[1][:-1])
             elif mode == 2:
-                # 全部のエッジを作る。
                 try:
                     while(True):
                         scorelist.append(score)
@@ -52,29 +48,13 @@ def temp1(mode=0):
                         score[1] = float(score[1][:-1])
                 except IndexError:
                     pass
-            elif mode == 3:
-                # スコア値の高い順に二つ取ってくる 物によっては一つになっている。
+            else:
                 for i in range(3):
                     scorelist.append(score)
                     if score[0] in Clist and score[1] < 1:
                         G = nxappend(G, Cnumber, score[0], score[1])
                     score = fi.readline().split("\t")
                     score[1] = float(score[1][:-1])
-            else:
-                # エッジが二つになるように取ってくる
-                i = 0
-                try:
-                    while(True):
-                        scorelist.append(score)
-                        if score[0] in Clist and score[1] < 1:
-                            G = nxappend(G, Cnumber, score[0], score[1])
-                            i += 1
-                        score = fi.readline().split("\t")
-                        score[1] = float(score[1][:-1])
-                        if i >= 2:
-                            break
-                except IndexError:
-                    pass
             scoredic[Cnumber] = scorelist
     print(str(len(G.nodes())) + "/" + str(len(Clist)))
     print("edge:" + str(len(G.edges())))
@@ -93,6 +73,8 @@ def nxappend(G, start, end, weight):
         G.add_node(end)
     if not (start, end) in G.edges() and not (end, start) in G.edges():
         G.add_edge(start, end, weight=weight)
+    else:
+        G.edges()
     return G
 
 
@@ -113,7 +95,7 @@ def drawnx(G):
 
 
 def main():
-    temp1(mode=0)
+    make_graph(mode=0)
 
 
 if __name__ == '__main__':
