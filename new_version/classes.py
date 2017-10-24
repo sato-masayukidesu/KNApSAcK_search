@@ -253,6 +253,7 @@ class MCS_Finder(object):
             query += l1 + l2
         query = re.sub("\(", "[(]", query)
         query = re.sub("\)", "[)]", query)
+        query += "\s"
         with open(self.genus + "/kcfs.kcfs")as f:
             file = f.read()
             molecule = file.split("///\n")
