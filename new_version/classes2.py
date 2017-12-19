@@ -436,8 +436,7 @@ class control_all_genus(object):
 
         Cn_in_genus = dict()
         for genus in self.ari:
-            f = MCS_Finder(genus, self.path)
-            Cnlist = f.gCfl(label)
+            Cnlist = self.gCfl(genus, label)
             if Cnlist != []:
                 Cn_in_genus[genus] = Cnlist
         return Cn_in_genus
