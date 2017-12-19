@@ -46,7 +46,7 @@ class MCS_Finder(object):
             html: requests.models.Response
         """
         import requests
-        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=" + genus)
+        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=" + genus, 60)
         return html
 
 
@@ -57,7 +57,7 @@ class MCS_Finder(object):
             if os.path.exists(self.path + "/url.txt"):
                 print("pass")
                 return True
-        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=" + genus)
+        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=" + genus, 60)
         with open(self.path + "/url.txt", "w")as f:
             f.write(html.text)
         return True
@@ -341,7 +341,7 @@ class MCS_Finder(object):
         import requests
         import time
         genuses_list = []
-        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber)
+        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber, 60)
         time.sleep(1)
         dom = lxml.html.fromstring(html.text)
         for element in dom.xpath('//*[@class="org2"]'):
@@ -357,7 +357,7 @@ class MCS_Finder(object):
     def get_name(self, Cnumber):
         import requests
         import lxml.html
-        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber)
+        html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber, 60)
         dom = lxml.html.fromstring(html.text)
         name = dom.xpath('//*[@id="my_contents"]/table/tr[2]/td[1]/table/tr[1]/td')[0].text
         return name
@@ -455,3 +455,30 @@ class control_all_genus(object):
                     if self.allkcfs[(temp[1], temp[2])] == int(temp[3]):
                         only[(temp[1], temp[2])] = (int(temp[3]), genus)
         return only
+
+
+    def gCfl(self, genus, label):
+        import re
+        path = self.path + "/" + genus
+        label_list = re.split("[-()]", label)
+        sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", label)
+        query = ""
+        for i in range(label_list.count("")):
+            label_list.remove("")
+        for i in range(len(label_list)):
+            label_list[i] += "[0-9]?[a-z]?"
+        for l1, l2 in zip(sep_list, label_list):
+            query += l1 + l2
+        query = re.sub("\(", "[(]", query)
+        query = re.sub("\)", "[)]", query)
+        query += "\s"
+        query = "\s" + query
+        with open(path + "/kcfs.kcfs")as f:
+            file = f.read()
+            molecule = file.split("///\n")
+            Cnlist = []
+            for mole in molecule:
+                if re.search(query, mole) is not None:
+                    Cn = mole.split("\n")[0].split()[1]
+                    Cnlist.append(Cn)
+        return Cnlist
