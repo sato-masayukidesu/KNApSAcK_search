@@ -36,20 +36,20 @@ def get_name(Cnumber):
     return name
 
 
-def get_genuses(Cnumber, other=True, genus = None):
+def get_genuses(Cnumber, other=True, genus=None, timeout=60):
     import lxml.html
     import requests
     import time
     genuses_list = []
-    html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber)
+    html = requests.get("http://kanaya.naist.jp/knapsack_jsp/information.jsp?word=" + Cnumber, timeout)
     time.sleep(1)
     dom = lxml.html.fromstring(html.text)
-    for element in dom.xpath('//*[@class="org2"]s'):
+    for element in dom.xpath('//*[@class="org2"]'):
         genus2 = element.text.split()[0]
         if other:
             genuses_list.append(element.text.replace("\xa0", " ")[:-1])
         else:
-            if genus2 == self.genus:
+            if genus2 == genus:
                 genuses_list.append(element.text.replace("\xa0", " ")[:-1])
     return genuses_list
 
@@ -186,8 +186,8 @@ def split(countfile, result="test.txt", limit=0):
     return True
 
 
-def make_kcfs(Cnllist, path, limit=2000, splimit=0):
-    search(Cnlist)
+def make_kcfs(Cnlist, path, limit=2000, splimit=0):
+    search(Cnlist, path + "kcfs.kcfs")
     kcfs2count(path + "kcfs.kcfs", path + "kcfscount.txt")
     split(path + "kcfscount.txt", path + "splitedcount.txt", splimit)
     return True
