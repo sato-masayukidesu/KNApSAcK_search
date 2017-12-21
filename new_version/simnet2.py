@@ -19,7 +19,7 @@ def get_simcomp(Clist, filename="SIMCOMP2/test.txt"):
     return True
 
 
-def make_graph(mode=0, Cnlist, filepath="SIMCOMP2/test.txt"):
+def make_graph(Clist, mode=0, filepath="SIMCOMP2/test.txt", lim=0.9):
     G = nx.Graph()
     pylab.figure(figsize=(10, 10))
     scoredic = dict()
@@ -27,34 +27,50 @@ def make_graph(mode=0, Cnlist, filepath="SIMCOMP2/test.txt"):
         print("input correct filepath")
         return False
     with open(filepath, "r") as fi:
+
+        score = fi.readline().split("\t")
+        score[2] = float(score[2][:-1])
         for Cnumber in Clist:
             scorelist = []
-            score = fi.readline().split("\t")
-            score[1] = float(score[1][:-1])
+            while(True):
+                if score[0] == Cnumber:
+                    break
+                score = fi.readline().split("\t")
+                score[2] = float(score[2][:-1])
             if mode == 1:
-                while(score[1] > 0.9):
+                while(score[2] > lim):
+                    while(True):
+                        if score[0] == Cnumber:
+                            break
+                        score = fi.readline().split("\t")
+                        score[2] = float(score[2][:-1])
                     scorelist.append(score)
-                    if score[0] in Clist and score[1] < 1:
-                        G = nxappend(G, Cnumber, score[0], score[1])
+                    if score[0] in Clist and score[2] < 1:
+                        G = nxappend(G, Cnumber, score[1], score[2])
                     score = fi.readline().split("\t")
-                    score[1] = float(score[1][:-1])
+                    score[2] = float(score[2][:-1])
             elif mode == 2:
                 try:
                     while(True):
                         scorelist.append(score)
-                        if score[0] in Clist and score[1] < 1:
-                            G = nxappend(G, Cnumber, score[0], score[1])
+                        if score[0] in Clist and score[2] < 1:
+                            G = nxappend(G, Cnumber, score[1], score[2])
                         score = fi.readline().split("\t")
-                        score[1] = float(score[1][:-1])
+                        score[2] = float(score[2][:-1])
                 except IndexError:
                     pass
             else:
                 for i in range(3):
+                    while(True):
+                        if score[0] == Cnumber:
+                            break
+                        score = fi.readline().split("\t")
+                        score[2] = float(score[2][:-1])
                     scorelist.append(score)
-                    if score[0] in Clist and score[1] < 1:
-                        G = nxappend(G, Cnumber, score[0], score[1])
+                    if score[0] in Clist and score[2] < 1:
+                        G = nxappend(G, Cnumber, score[1], score[2])
                     score = fi.readline().split("\t")
-                    score[1] = float(score[1][:-1])
+                    score[2] = float(score[2][:-1])
             scoredic[Cnumber] = scorelist
     print(str(len(G.nodes())) + "/" + str(len(Clist)))
     print("edge:" + str(len(G.edges())))
@@ -64,6 +80,7 @@ def make_graph(mode=0, Cnlist, filepath="SIMCOMP2/test.txt"):
     # plt.xticks([])
     # plt.yticks([])
     # plt.show()
+    # return scoredic
 
 
 def nxappend(G, start, end, weight):
