@@ -93,7 +93,7 @@ class MCS_Finder(object):
                 break
 
             try:
-                if genus != dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]/font')[0].text:
+                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()):
                     i += 1
                     continue
             except IndexError:
@@ -137,7 +137,7 @@ class MCS_Finder(object):
                 break
 
             try:
-                if genus != dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]/font')[0].text:
+                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()):
                     i += 1
                     continue
             except IndexError:
