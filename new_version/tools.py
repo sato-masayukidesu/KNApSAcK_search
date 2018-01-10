@@ -145,6 +145,81 @@ def kcfs2count(kcfs, txt):
     return True
 
 
+def mawasu(label):
+    units = label.split("-")
+    for i in range(len(units)):
+        ret = units[i:] + units[:i]
+        yield "-".join(ret)
+
+
+def reverse(label):
+    units = label.split("-")
+    rev = ""
+    for unit in units:
+        rev = unit + "-" + rev
+    return rev[:-1]
+
+
+def kcfs2count2(kcfs, txt):
+    import re
+    dic = {}
+    with open(kcfs, "r") as f:
+        for mol in f.read(None).split("///\n"):
+            # sta = 0
+            sta2 = 0
+            type_ = 0
+            for line in mol.split("\n"):
+                # if re.match("^\S", line):
+                    # sta = line.split()[0]
+                if re.match("^\s\s\S", line):
+                    sta2 = line.split()[0]
+                if re.match("///", line):
+                    pass
+                elif sta2:
+                    a = line[12:].split()
+                    type_ = sta2
+                    try:
+                        num = int(re.findall("\d+", a[1])[0])
+                        str_ = a[0]
+                    except IndexError:
+                        continue
+                    str1 = re.sub("[a-z]", "", str_)
+                    str2 = re.sub("\d", "", str1)
+                    if type_ == "RING":
+                        ringlist1 = [i for i in mawasu(str1)]
+                        ringlist2 = [i for i in mawasu(str2)]
+                        str1 = sorted(ringlist1)[0]
+                        str2 = sorted(ringlist2)[0]
+                    elif type_ == "SKELETON":
+                        rev1 = reverse(str1)
+                        rev2 = reverse(str2)
+                        if rev1 < str1:
+                            str1 = rev1
+                        if rev2 < str2:
+                            str2 = rev2
+                    dic.setdefault((type_, str_), 0)
+                    dic[(type_, str_)] += num
+                    dic.setdefault((type_, str2), 0)
+                    dic[(type_, str2)] += num
+                    dic.setdefault((type_, str1), 0)
+                    dic[(type_, str1)] += num
+
+    array = []
+    for item in dic.items():
+        array += [[0 - item[1], item[0]]]
+
+    with open(txt, "w") as f2:
+        index = 0
+        for list_ in sorted(array):
+            index += 1
+            num = str(index)
+            while(len(num) < 8):
+                num = "0" + num
+            num = "S" + num + list_[1][0][0]
+            f2.write(num + "\t" + list_[1][0] + "\t" + list_[1][1] + "\t" + str(0 - list_[0]) + "\n")
+    return True
+
+
 def split(countfile, result="test.txt", limit=0):
     with open(countfile, "r") as f:
         with open(result, "w") as f2:
@@ -189,5 +264,12 @@ def split(countfile, result="test.txt", limit=0):
 def make_kcfs(Cnlist, path, limit=2000, splimit=0):
     search(Cnlist, path + "kcfs.kcfs")
     kcfs2count(path + "kcfs.kcfs", path + "kcfscount.txt")
+    split(path + "kcfscount.txt", path + "splitedcount.txt", splimit)
+    return True
+
+
+def make_kcfs2(Cnlist, path, limit=2000, splimit=0):
+    search(Cnlist, path + "kcfs.kcfs")
+    kcfs2count2(path + "kcfs.kcfs", path + "kcfscount.txt")
     split(path + "kcfscount.txt", path + "splitedcount.txt", splimit)
     return True
