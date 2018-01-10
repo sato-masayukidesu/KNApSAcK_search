@@ -93,7 +93,7 @@ class MCS_Finder(object):
                 break
 
             try:
-                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()):
+                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()).split()[0]:
                     i += 1
                     continue
             except IndexError:
@@ -137,7 +137,7 @@ class MCS_Finder(object):
                 break
 
             try:
-                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()):
+                if genus != str(dom.xpath('//*[@class="sortable d1"]/tr[' + str(i) + ']/td[6]')[0].text_content()).split()[0]:
                     i += 1
                     continue
             except IndexError:
@@ -377,7 +377,7 @@ class control_all_genus(object):
 
         ari = []
         for genus in os.listdir(self.path):
-            if genus == ".DS_Store" or genus == "others" or genus == "genuses.pickel":
+            if genus == ".DS_Store" or genus == "others" or genus == "genuses.pickle":
                 continue
             elif os.listdir(self.path + "/" + genus) == []:
                 continue
