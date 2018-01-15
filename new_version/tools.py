@@ -1,6 +1,14 @@
 
-def search_all_Cnumber_from_label(label):
+def search_all_Cnumber_from_label(label, ring=True):
     import re
+
+    if ring:
+        Cnset = set()
+        for lab in mawasu(label):
+            for Cn in search_all_Cnumber_from_label(lab, ring=False):
+                Cnset.add(Cn)
+        return sorted(list(Cnset))
+
     label_list = re.split("[-()]", label)
     sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", label)
     query = ""
