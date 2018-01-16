@@ -4,10 +4,13 @@ def search_all_Cnumber_from_label(label, ring=True):
 
     if ring:
         Cnset = set()
+        counter = 0
         for lab in mawasu(label):
-            for Cn in search_all_Cnumber_from_label(lab, ring=False):
+            Cnset2, tempcounter = search_all_Cnumber_from_label(lab, ring=False)
+            counter += tempcounter
+            for Cn in Cnset2:
                 Cnset.add(Cn)
-        return sorted(list(Cnset))
+        return sorted(list(Cnset)), counter
 
     label_list = re.split("[-()]", label)
     sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", label)
@@ -22,17 +25,26 @@ def search_all_Cnumber_from_label(label, ring=True):
     query = re.sub("\)", "[)]", query)
     query += "\s"
     query = "\s" + query
-    Cnlist = []
+    Cnset = set()
+    counter = 0
     for i in ["1-9", "10-19", "20-29", "30-39", "40-49", "50-59"]:
         with open("../../../database/kcfs/KNApSAck" + i + ".kcfs")as f:
             file = f.read()
             molecule = file.split("///\n")
-
             for mole in molecule:
-                if re.search(query, mole) is not None:
-                    Cn = mole.split("\n")[0].split()[1]
-                    Cnlist.append(Cn)
-    return Cnlist
+                if re.search(query, mole) is None:
+                    continue
+                for line in mole.split("\n")[2:]:
+                    line_ = line
+                    if re.match("^\s\s\S", line_):
+                        type_ = line.split()[0]
+                        line_ = " ".join(line_.split()[1:])
+                        line_ = " " + line_
+                    if re.search(query, line_) is not None:
+                        Cn = mole.split("\n")[0].split()[1]
+                        Cnset.add(Cn)
+                        counter += int(line_.split()[1][1:-1])
+    return sorted(list(Cnset)), counter
 
 
 def get_name(Cnumber):
