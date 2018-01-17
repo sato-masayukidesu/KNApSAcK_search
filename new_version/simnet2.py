@@ -38,12 +38,12 @@ def make_graph(Clist, mode=0, filepath="SIMCOMP2/test.txt", lim=0.9):
                 score = fi.readline().split("\t")
                 score[2] = float(score[2][:-1])
             if mode == 1:
-                while(score[2] > lim):
-                    while(True):
-                        if score[0] == Cnumber:
-                            break
-                        score = fi.readline().split("\t")
-                        score[2] = float(score[2][:-1])
+                while(True):
+                    if score[0] == Cnumber:
+                        break
+                    score = fi.readline().split("\t")
+                    score[2] = float(score[2][:-1])
+                while(score[2] > lim and score[0] == Cnumber):
                     scorelist.append(score)
                     if score[0] in Clist and score[2] < 1:
                         G = nxappend(G, Cnumber, score[1], score[2])
