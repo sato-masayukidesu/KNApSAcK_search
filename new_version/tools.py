@@ -1,5 +1,5 @@
 
-def search_all_Cnumber_from_label(label, ring=True):
+def search_all_Cnumber_from_label(label, ring=True, Type=None):
     import re
 
     if ring:
@@ -40,6 +40,8 @@ def search_all_Cnumber_from_label(label, ring=True):
                         type_ = line.split()[0]
                         line_ = " ".join(line_.split()[1:])
                         line_ = " " + line_
+                    if Type is not None and Type != type_:
+                        continue
                     if re.search(query, line_) is not None:
                         Cn = mole.split("\n")[0].split()[1]
                         Cnset.add(Cn)
