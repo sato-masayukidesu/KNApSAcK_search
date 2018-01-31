@@ -58,7 +58,7 @@ class MCS_Finder(object):
                 print("pass")
                 return True
         html = requests.get("http://kanaya.naist.jp/knapsack_jsp/result.jsp?sname=organism&word=" + genus, 60)
-        with open(self.path + "/url.txt", "w")as f:
+        with open(self.path + "/urltext.txt", "w")as f:
             f.write(html.text)
         return True
 
