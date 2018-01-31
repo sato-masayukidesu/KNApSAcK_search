@@ -295,3 +295,54 @@ def make_kcfs2(Cnlist, path, limit=2000, splimit=0):
     kcfs2count2(path + "kcfs.kcfs", path + "kcfscount.txt")
     split(path + "kcfscount.txt", path + "splitedcount.txt", splimit)
     return True
+
+
+def make_mol_object(Cnlist, rdD=True):
+    import sys
+    sys.path.append("../../module")
+    import kcf.converter as kcfco
+    from rdkit.Chem import rdDepictor
+    from rdkit import Chem
+
+    hanni = []
+    for i in range(1, 52):
+        page = str(i)
+        with open("../../../database/knapsack-kcf/KNApSAck" + page + ".kcf")as f1:
+            hanni.append(f1.read().split()[1])
+
+    mol_list = []
+    counter = 0
+    nCnumber = []
+    for z, Cn in enumerate(sorted(Cnlist)):
+        num = int(Cn[1:])
+        for p, hanCn in enumerate(hanni[1:]):
+            hannum = int(hanCn[1:])
+            if hannum > num:
+                pagenum = str(p+1)
+                with open("../../../database/knapsack-kcf/KNApSAck" + pagenum + ".kcf")as f2:
+                    complist = f2.read().split("///\n")
+                    try:
+                        for comp in complist:
+                            if Cn == comp.split()[1]:
+                                molblock = kcfco.kcf_to_molblock(comp)
+                                # print("OK", i)
+                                # print(molblock[1])
+                                mol = Chem.MolFromMolBlock(molblock[1])
+                                if mol is None:
+                                    print("None", Cn, z, k3)
+                                    if "#+" in C or "#-" in C:
+                                        print("Charge #- or #+ in\n")
+                                    counter += 1
+                                    break
+                                if rdD:
+                                    rdDepictor.Compute2DCoords(mol)
+                                mol_list.append(mol)
+                                nCnumber.append(i)
+                                if "#+" in C or "#-" in C:
+                                    print(Cn, z, k3, "Charge in  but have no error\n")
+                                break
+                    except IndexError:
+                        counter += 1
+                        print("IndexError", Cn, z)
+                break
+    print("number of Compound having charge is " + str(counter))
