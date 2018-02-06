@@ -346,3 +346,4 @@ def make_mol_object(Cnlist, rdD=True):
                         print("IndexError", Cn, z)
                 break
     print("number of Compound having charge is " + str(counter))
+    return mol_list
