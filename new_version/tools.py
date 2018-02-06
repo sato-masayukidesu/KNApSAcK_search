@@ -330,7 +330,7 @@ def make_mol_object(Cnlist, rdD=True):
                                 mol = Chem.MolFromMolBlock(molblock[1])
                                 if mol is None:
                                     print("None", Cn, z, k3)
-                                    if "#+" in C or "#-" in C:
+                                    if "#+" in comp or "#-" in comp:
                                         print("Charge #- or #+ in\n")
                                     counter += 1
                                     break
@@ -338,7 +338,7 @@ def make_mol_object(Cnlist, rdD=True):
                                     rdDepictor.Compute2DCoords(mol)
                                 mol_list.append(mol)
                                 nCnumber.append(i)
-                                if "#+" in C or "#-" in C:
+                                if "#+" in comp or "#-" in comp:
                                     print(Cn, z, k3, "Charge in  but have no error\n")
                                 break
                     except IndexError:
