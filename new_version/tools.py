@@ -329,7 +329,7 @@ def make_mol_object(Cnlist, rdD=True):
                                 # print(molblock[1])
                                 mol = Chem.MolFromMolBlock(molblock[1])
                                 if mol is None:
-                                    print("None", Cn, z, k3)
+                                    print("None", Cn, z)
                                     if "#+" in comp or "#-" in comp:
                                         print("Charge #- or #+ in\n")
                                     counter += 1
@@ -347,3 +347,31 @@ def make_mol_object(Cnlist, rdD=True):
                 break
     print("number of Compound having charge is " + str(counter))
     return mol_list
+
+
+def draw_png(cn_list, filename):
+    from rdkit.Chem import Draw
+
+    mol_list = make_mol_object(cn_list)
+    img = Draw.MolsToGridImage(mol_list, legends=cn_list, subImgSize=(400, 400))
+    img.save(filename)
+
+
+def draw_png_with_compound_name(cn_list, filename):
+    from rdkit.Chem import Draw
+    import time
+
+    name = []
+    for Cnumber in cn_list:
+        name.append(get_name(Cnumber))
+        time.sleep(3)
+    mol_list = make_mol_object(cn_list)
+    img = Draw.MolsToGridImage(mol_list, legends=name, subImgSize=(400, 400))
+    img.save(filename)
+
+
+def get_label_atoms_number(label):
+    import re
+
+    length = len(re.findall("[A-Z]", label))
+    return length
