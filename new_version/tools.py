@@ -1,28 +1,32 @@
 
-def search_all_Cnumber_from_label(label, ring=True, Type=None):
+def search_all_Cnumber_from_label(label, ring=False, Type=None):
     import re
 
     if ring:
         Cnset = set()
         counter = 0
         for lab in mawasu(label):
-            Cnset2, tempcounter = search_all_Cnumber_from_label(lab, ring=False)
+            Cnset2, tempcounter = search_all_Cnumber_from_label(lab, ring=False,
+                                                                Type=Type)
             counter += tempcounter
             for Cn in Cnset2:
                 Cnset.add(Cn)
         return sorted(list(Cnset)), counter
 
-    label_list = re.split("[-()]", label)
+    label_list = re.split("[-()+]", label)
     sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", label)
     query = ""
     for i in range(label_list.count("")):
         label_list.remove("")
     for i in range(len(label_list)):
         label_list[i] += "[0-9]?[a-z]?"
+    if sep_list[-1] != "":
+        label_list.append("")
     for l1, l2 in zip(sep_list, label_list):
         query += l1 + l2
     query = re.sub("\(", "[(]", query)
     query = re.sub("\)", "[)]", query)
+    query = re.sub("\+", "[+]", query)
     query += "\s"
     query = "\s" + query
     Cnset = set()
@@ -405,11 +409,14 @@ def draw_png_highlight(cn_list, typelabel, filename, with_Cname=False):
                     type_ = sta2
                     try:
                         if type_ == typelabel[0]:
-                            if re.search(query, a[0]) is not None:
+                            if re.fullmatch(query, a[0]) is not None:
+                                matchnumber = set()
                                 for match in a[2:]:
-                                    ma = sorted(list(map(int,match.split("-"))))
-                                    ma = list(map(lambda x: x-1, ma))
-                                    matchlist.append(ma)
+                                    ma = list(map(int,match.split("-")))
+                                    ma = set(map(lambda x: x-1, ma))
+                                    matchnumber = matchnumber.union(ma)
+                                matchlist.append(sorted(list(matchnumber)))
+                                break
                     except IndexError:
                         continue
     if with_Cname:
