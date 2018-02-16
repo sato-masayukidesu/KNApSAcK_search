@@ -80,6 +80,22 @@ def get_genuses(Cnumber, other=True, genus=None, timeout=60):
     return genuses_list
 
 
+def downer(label, level=1):
+    import re
+    label_list = re.split("[-()+]", label)
+    sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", label)
+    query = ""
+    for i in range(label_list.count("")):
+        label_list.remove("")
+    for i in range(len(label_list)):
+        label_list[i] = label_list[i][:level]
+    if sep_list[-1] != "":
+        label_list.append("")
+    for l1, l2 in zip(sep_list, label_list):
+        query += l1 + l2
+    return query
+
+
 def search(Cnumberlist, filename=None):
     "make kcffile only given Cnumbers from all kcffile"
     if filename is None:
