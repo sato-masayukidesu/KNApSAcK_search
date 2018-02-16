@@ -349,15 +349,16 @@ def make_mol_object(Cnlist, rdD=True):
     return mol_list
 
 
-def draw_png(cn_list, filename):
+def draw_png(cn_list, filename, highlight=[]):
     from rdkit.Chem import Draw
 
     mol_list = make_mol_object(cn_list)
-    img = Draw.MolsToGridImage(mol_list, legends=cn_list, subImgSize=(400, 400))
+    img = Draw.MolsToGridImage(mol_list, legends=cn_list, subImgSize=(400, 400),
+                               highlightAtomLists=highlight)
     img.save(filename)
 
 
-def draw_png_with_compound_name(cn_list, filename):
+def draw_png_with_compound_name(cn_list, filename, highlight):
     from rdkit.Chem import Draw
     import time
 
@@ -366,9 +367,57 @@ def draw_png_with_compound_name(cn_list, filename):
         name.append(get_name(Cnumber))
         time.sleep(3)
     mol_list = make_mol_object(cn_list)
-    img = Draw.MolsToGridImage(mol_list, legends=name, subImgSize=(400, 400))
+    img = Draw.MolsToGridImage(mol_list, legends=name, subImgSize=(400, 400),
+                               highlightAtomLists=highlight)
     img.save(filename)
 
+
+def draw_png_highlight(cn_list, typelabel, filename, with_Cname=False):
+    import os
+    import re
+
+    search(cn_list, "tempkcfs.kcfs")
+    matchlist = []
+    label_list = re.split("[-()]", typelabel[1])
+    sep_list = re.split("[a-zA-Z][0-9]?[a-z]?", typelabel[1])
+    query = ""
+    for i in range(label_list.count("")):
+        label_list.remove("")
+    for i in range(len(label_list)):
+        label_list[i] += "[0-9]?[a-z]?"
+    for l1, l2 in zip(sep_list, label_list):
+        query += l1 + l2
+    query = re.sub("\(", "[(]", query)
+    query = re.sub("\)", "[)]", query)
+    with open("tempkcfs.kcfs")as f:
+        for mol, cn in zip(f.read().split("///\n"), cn_list):
+            sta2 = False
+            if mol.split()[1] != cn:
+                matchlist.append([])
+                continue
+            for line in mol.split("\n"):
+                if re.match("^\s\s\S", line):
+                    sta2 = line.split()[0]
+                if re.match("///", line):
+                    pass
+                elif sta2:
+                    a = line[12:].split()
+                    type_ = sta2
+                    try:
+                        if type_ == typelabel[0]:
+                            if re.search(query, a[0]) is not None:
+                                for match in a[2:]:
+                                    ma = sorted(list(map(int,match.split("-"))))
+                                    ma = list(map(lambda x: x-1, ma))
+                                    matchlist.append(ma)
+                    except IndexError:
+                        continue
+    if with_Cname:
+        draw_png_with_compound_name(cn_list, filename, matchlist)
+    else:
+        draw_png(cn_list, filename, matchlist)
+    os.remove("tempkcfs.kcfs")
+    return True
 
 def get_label_atoms_number(label):
     import re
