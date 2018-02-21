@@ -369,16 +369,18 @@ def make_mol_object(Cnlist, rdD=True):
     return mol_list
 
 
-def draw_png(cn_list, filename, highlight=[]):
+def draw_png(cn_list, filename, highlight=[], color=[1,0,0]):
     from rdkit.Chem import Draw
 
     mol_list = make_mol_object(cn_list)
     img = Draw.MolsToGridImage(mol_list, legends=cn_list, subImgSize=(400, 400),
-                               highlightAtomLists=highlight)
+                               highlightAtomLists=highlight,
+                               highlightColor=color)
     img.save(filename)
 
 
-def draw_png_with_compound_name(cn_list, filename, highlight):
+def draw_png_with_compound_name(cn_list, filename, highlight=[],
+                                color=[1,0,0]):
     from rdkit.Chem import Draw
     import time
 
@@ -388,11 +390,13 @@ def draw_png_with_compound_name(cn_list, filename, highlight):
         time.sleep(3)
     mol_list = make_mol_object(cn_list)
     img = Draw.MolsToGridImage(mol_list, legends=name, subImgSize=(400, 400),
-                               highlightAtomLists=highlight)
+                               highlightAtomLists=highlight,
+                               highlightColor=color)
     img.save(filename)
 
 
-def draw_png_highlight(cn_list, typelabel, filename, with_Cname=False):
+def draw_png_highlight(cn_list, typelabel, filename, with_Cname=False,
+                       color=[1,0,0]):
     import os
     import re
 
@@ -436,9 +440,9 @@ def draw_png_highlight(cn_list, typelabel, filename, with_Cname=False):
                     except IndexError:
                         continue
     if with_Cname:
-        draw_png_with_compound_name(cn_list, filename, matchlist)
+        draw_png_with_compound_name(cn_list, filename, matchlist, color)
     else:
-        draw_png(cn_list, filename, matchlist)
+        draw_png(cn_list, filename, matchlist, color)
     os.remove("tempkcfs.kcfs")
     return True
 
